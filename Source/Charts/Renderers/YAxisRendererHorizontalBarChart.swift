@@ -74,6 +74,8 @@ open class YAxisRendererHorizontalBarChart: YAxisRenderer
             if labelPosition == .outsideChart
             {
                 yPos = viewPortHandler.contentTop - baseYOffset
+
+                drawNameYAxis( context: context, nameRect: yAxis.nameRectTop)
             }
             else
             {
@@ -85,6 +87,7 @@ open class YAxisRendererHorizontalBarChart: YAxisRenderer
             if labelPosition == .outsideChart
             {
                 yPos = viewPortHandler.contentBottom + lineHeight + baseYOffset
+                drawNameYAxis( context: context, nameRect: yAxis.nameRectBottom)
             }
             else
             {
@@ -101,6 +104,36 @@ open class YAxisRendererHorizontalBarChart: YAxisRenderer
             fixedPosition: yPos,
             positions: transformedPositions(),
             offset: yAxis.yOffset)
+    }
+
+    /// draws the x-name
+    open override func drawNameYAxis (
+        context: CGContext,
+        nameRect: CGRect)
+    {
+        guard
+            let yAxis = self.axis as? YAxis
+            else { return }
+
+        if yAxis.nameAxisEnabled == false
+        {
+            return
+        }
+
+        let text = yAxis.nameAxis
+
+        #if os(OSX)
+        let paraStyle = NSParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
+        #else
+        let paraStyle = NSParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
+        #endif
+
+        paraStyle.alignment = .center
+
+        let labelAttrs = [NSAttributedString.Key.font: yAxis.nameAxisFont,
+                          NSAttributedString.Key.foregroundColor: yAxis.nameAxisTextColor,
+                          NSAttributedString.Key.paragraphStyle: paraStyle] 
+        text.draw(in: nameRect, withAttributes: labelAttrs)
     }
     
     open override func renderAxisLine(context: CGContext)

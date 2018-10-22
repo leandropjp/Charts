@@ -40,7 +40,11 @@ open class AxisBase: ComponentBase
     
     @objc open var drawGridLinesEnabled = true
     @objc open var drawAxisLineEnabled = true
-    
+
+    open var nameAxis : String = ""
+    open var nameAxisFont = NSUIFont.boldSystemFont(ofSize: 12.0)
+    open var nameAxisTextColor = NSUIColor.black
+    open var nameAxisEnabled = false
     /// flag that indicates of the labels of this axis should be drawn or not
     @objc open var drawLabelsEnabled = true
     
@@ -212,6 +216,11 @@ open class AxisBase: ComponentBase
     
     /// the total range of values this axis covers
     @objc open var axisRange = Double(0)
+
+    open var nameRectBottom = CGRect()
+    open var nameRectTop = CGRect()
+    open var nameRectLeft = CGRect()
+    open var nameRectRight = CGRect()
     
     /// The minumum number of labels on the axis
     @objc open var axisMinLabels = Int(2) {

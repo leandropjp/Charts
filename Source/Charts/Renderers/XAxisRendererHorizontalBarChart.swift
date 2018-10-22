@@ -91,7 +91,9 @@ open class XAxisRendererHorizontalBarChart: XAxisRenderer
         
         if xAxis.labelPosition == .top
         {
-            drawLabels(context: context, pos: viewPortHandler.contentRight + xoffset, anchor: CGPoint(x: 0.0, y: 0.5))
+            let pos  = viewPortHandler.contentRight + xoffset
+            drawLabels(context: context, pos: pos, anchor: CGPoint(x: 0.0, y: 0.5))
+            drawNameXAxis ( context: context,  nameRect: xAxis.nameRectRight)
         }
         else if xAxis.labelPosition == .topInside
         {
@@ -99,7 +101,9 @@ open class XAxisRendererHorizontalBarChart: XAxisRenderer
         }
         else if xAxis.labelPosition == .bottom
         {
-            drawLabels(context: context, pos: viewPortHandler.contentLeft - xoffset, anchor: CGPoint(x: 1.0, y: 0.5))
+            let pos  = viewPortHandler.contentLeft - xoffset
+            drawLabels(context: context, pos: pos, anchor: CGPoint(x: 1.0, y: 0.5))
+            drawNameXAxis ( context: context,  nameRect: xAxis.nameRectLeft)
         }
         else if xAxis.labelPosition == .bottomInside
         {
@@ -107,9 +111,55 @@ open class XAxisRendererHorizontalBarChart: XAxisRenderer
         }
         else
         { // BOTH SIDED
-            drawLabels(context: context, pos: viewPortHandler.contentRight + xoffset, anchor: CGPoint(x: 0.0, y: 0.5))
-            drawLabels(context: context, pos: viewPortHandler.contentLeft - xoffset, anchor: CGPoint(x: 1.0, y: 0.5))
+            // right
+            var pos  = viewPortHandler.contentRight + xoffset
+            drawLabels(context: context, pos: pos, anchor: CGPoint(x: 0.0, y: 0.5))
+            drawNameXAxis ( context: context,  nameRect: xAxis.nameRectRight )
+
+            // left
+            pos  = viewPortHandler.contentLeft - xoffset
+            drawLabels(context: context, pos: pos, anchor: CGPoint(x: 1.0, y: 0.5))
+            drawNameXAxis ( context: context,  nameRect: xAxis.nameRectLeft )
         }
+    }
+
+    /// draws the x-name
+    open override func drawNameXAxis ( context: CGContext, nameRect: CGRect)
+    {
+        guard
+            let xAxis = self.axis as? XAxis
+            else { return }
+
+        if xAxis.nameAxisEnabled == false
+        {
+            return
+        }
+
+        let midY = nameRect.midY
+        let xNamePos = nameRect.maxX
+        let text = xAxis.nameAxis
+
+        #if os(OSX)
+        let paraStyle = NSParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
+        #else
+        let paraStyle = NSParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
+        #endif
+
+        paraStyle.alignment = .center
+
+        let labelAttrs = [NSAttributedString.Key.font: xAxis.nameAxisFont,
+                          NSAttributedString.Key.foregroundColor: xAxis.nameAxisTextColor,
+                          NSAttributedString.Key.paragraphStyle: paraStyle]
+
+        let labelRotationAngleRadians = -90.0 * CGFloat(.pi / 180.0)
+
+        ChartUtils.drawText(
+            context: context,
+            text: text,
+            point: CGPoint(x: xNamePos, y: midY),
+            attributes: labelAttrs,
+            anchor: CGPoint(x: 1.0, y: 0.5),
+            angleRadians: labelRotationAngleRadians)
     }
 
     /// draws the x-labels on the specified y-position
@@ -161,6 +211,46 @@ open class XAxisRendererHorizontalBarChart: XAxisRenderer
                 }
             }
         }
+    }
+
+    /// draws the name axis
+    open override func drawNameXAxis(
+        context: CGContext,
+        fixedPosition: CGFloat,
+        positions: CGPoint,
+        offset: CGFloat)
+    {
+        guard
+            let xAxis = self.axis as? XAxis
+            else { return }
+
+        if xAxis.nameAxisEnabled == false
+        {
+            return
+        }
+
+        #if os(OSX)
+        let paraStyle = NSParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
+        #else
+        let paraStyle = NSParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
+        #endif
+
+        paraStyle.alignment = .center
+
+        let labelAttrs = [NSAttributedString.Key.font: xAxis.nameAxisFont,
+                          NSAttributedString.Key.foregroundColor: xAxis.nameAxisTextColor,
+                          NSAttributedString.Key.paragraphStyle: paraStyle]
+
+        let labelRotationAngleRadians = -90.0 * CGFloat(.pi / 180.0)
+        let text = xAxis.nameAxis
+
+        ChartUtils.drawText(
+            context: context,
+            text: text,
+            point: CGPoint(x: fixedPosition, y: positions.y + offset),
+            attributes: labelAttrs,
+            anchor: CGPoint(x: 1.0, y: 0.5),
+            angleRadians: labelRotationAngleRadians)
     }
     
     @objc open func drawLabel(
