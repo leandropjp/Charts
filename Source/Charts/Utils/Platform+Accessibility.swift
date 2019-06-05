@@ -33,7 +33,7 @@ open class NSUIAccessibilityElement: UIAccessibilityElement
         }
     }
 
-    override init(accessibilityContainer container: Any)
+    override public init(accessibilityContainer container: Any)
     {
         // We can force unwrap since all chart views are subclasses of UIView
         containerView = (container as! UIView)
@@ -83,7 +83,8 @@ extension NSUIView
     open override func index(ofAccessibilityElement element: Any) -> Int
     {
         guard let axElement = element as? NSUIAccessibilityElement else { return NSNotFound }
-        return (accessibilityChildren() as? [NSUIAccessibilityElement])?.index(of: axElement) ?? NSNotFound
+        return (accessibilityChildren() as? [NSUIAccessibilityElement])?
+            .firstIndex(of: axElement) ?? NSNotFound
     }
 }
 
@@ -167,7 +168,7 @@ open class NSUIAccessibilityElement: NSAccessibilityElement
         }
     }
 
-    init(accessibilityContainer container: Any)
+    public init(accessibilityContainer container: Any)
     {
         // We can force unwrap since all chart views are subclasses of NSView
         containerView = (container as! NSView)
@@ -179,7 +180,7 @@ open class NSUIAccessibilityElement: NSAccessibilityElement
     }
 }
 
-/// NOTE: setAccessibilityRole(.list) is called at init. See Platform.swift.
+/// - Note: setAccessibilityRole(.list) is called at init. See Platform.swift.
 extension NSUIView: NSAccessibilityGroup
 {
     open override func accessibilityLabel() -> String?
