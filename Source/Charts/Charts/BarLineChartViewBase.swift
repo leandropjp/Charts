@@ -436,30 +436,76 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
             if leftAxis.needsOffset
             {
                 offsetLeft += leftAxis.requiredSize().width
+                if leftAxis.nameAxisEnabled
+                {
+                    let nameLeftAxisHeight = leftAxis.nameAxis.size(withAttributes: [NSAttributedString.Key.font: leftAxis.nameAxisFont]).height
+                    offsetLeft += nameLeftAxisHeight
+                    leftAxis.nameRectLeft = CGRect(x: offsetLeft - leftAxis.requiredSize().width - nameLeftAxisHeight,
+                                                   y:viewPortHandler.contentTop,
+                                                   width: nameLeftAxisHeight,
+                                                   height:viewPortHandler.contentHeight)
+                }
             }
             
             if rightAxis.needsOffset
             {
                 offsetRight += rightAxis.requiredSize().width
+                if rightAxis.nameAxisEnabled
+                {
+                    let nameRightAxisHeight = rightAxis.nameAxis.size(withAttributes: [NSAttributedString.Key.font: rightAxis.nameAxisFont]).height
+                    offsetRight += nameRightAxisHeight
+                    rightAxis.nameRectRight = CGRect(x: viewPortHandler.contentRight + rightAxis.requiredSize().width,
+                                                     y: viewPortHandler.contentTop,
+                                                     width: nameRightAxisHeight,
+                                                     height: viewPortHandler.contentHeight)
+                }
             }
 
             if xAxis.isEnabled && xAxis.isDrawLabelsEnabled
             {
-                let xlabelheight = xAxis.labelRotatedHeight + xAxis.yOffset
-                
+                //let xlabelheight = xAxis.labelRotatedHeight + xAxis.yOffset
+                var xlabelheight = (xAxis.labelRotationAngle != 0 ? xAxis.labelRotatedHeight : xAxis.labelHeight)
+                xlabelheight += xAxis.yOffset
+
+                var namexAxisHeight = CGFloat(0.0)
+                var nameAxisRectWidth = CGFloat(0.0)
+                var nameAxisRectLeft = CGFloat(0.0)
+                if xAxis.nameAxisEnabled
+                {
+                    namexAxisHeight = xAxis.nameAxis.size(withAttributes: [NSAttributedString.Key.font: xAxis.nameAxisFont]).height
+                    nameAxisRectWidth = viewPortHandler.contentWidth
+                    nameAxisRectLeft = viewPortHandler.contentLeft
+                }
+
                 // offsets for x-labels
                 if xAxis.labelPosition == .bottom
                 {
-                    offsetBottom += xlabelheight
+                    offsetBottom += xlabelheight + namexAxisHeight
+                    xAxis.nameRectBottom = CGRect(x: nameAxisRectLeft,
+                                                  y: viewPortHandler.chartHeight - offsetBottom + xlabelheight,
+                                                  width: nameAxisRectWidth,
+                                                  height: namexAxisHeight)
                 }
                 else if xAxis.labelPosition == .top
                 {
-                    offsetTop += xlabelheight
+                    offsetTop += xlabelheight + namexAxisHeight
+                    xAxis.nameRectTop = CGRect(x: nameAxisRectLeft,
+                                               y: offsetTop - namexAxisHeight - xlabelheight,
+                                               width: nameAxisRectWidth,
+                                               height: namexAxisHeight)
                 }
                 else if xAxis.labelPosition == .bothSided
                 {
-                    offsetBottom += xlabelheight
-                    offsetTop += xlabelheight
+                    offsetBottom += xlabelheight + namexAxisHeight
+                    xAxis.nameRectBottom = CGRect(x: nameAxisRectLeft,
+                                                  y: viewPortHandler.chartHeight - offsetBottom + xlabelheight,
+                                                  width: nameAxisRectWidth,
+                                                  height: namexAxisHeight)
+                    offsetTop += xlabelheight + namexAxisHeight
+                    xAxis.nameRectTop = CGRect(x: nameAxisRectLeft,
+                                               y: offsetTop - namexAxisHeight - xlabelheight,
+                                               width: nameAxisRectWidth,
+                                               height: namexAxisHeight)
                 }
             }
             
