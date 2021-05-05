@@ -56,13 +56,13 @@ open class YAxisRenderer: NSObject, AxisRenderer
             {
                 textAlign = .right
                 xPos = viewPortHandler.offsetLeft - xoffset
-                drawNameYAxis( context: context, nameRect: yAxis.nameRectLeft)
+                drawNameYAxis( context: context, nameRect: axis.nameRectLeft)
             }
             else
             {
                 textAlign = .left
                 xPos = viewPortHandler.offsetLeft + xoffset
-                drawNameYAxis( context: context, nameRect: yAxis.nameRectRight)
+                drawNameYAxis( context: context, nameRect: axis.nameRectRight)
             }
         }
         else
@@ -116,13 +116,13 @@ open class YAxisRenderer: NSObject, AxisRenderer
 
         let labelRotationAngleRadians = -90.0 * CGFloat(.pi / 180.0)
 
-        ChartUtils.drawText(
-            context: context,
-            text: text,
-            point: CGPoint(x: xNamePos, y: midY),
-            attributes: labelAttrs,
+        context.drawText(
+            text,
+            at: CGPoint(x: xNamePos, y: midY),
+            align: .center,
             anchor: CGPoint(x: 1.0, y: 0.5),
-            angleRadians: labelRotationAngleRadians)
+            angleRadians: labelRotationAngleRadians,
+            attributes: labelAttrs)
     }
     
     open func renderAxisLine(context: CGContext)
@@ -188,13 +188,13 @@ open class YAxisRenderer: NSObject, AxisRenderer
         let labelRotationAngleRadians = -90.0 * CGFloat(.pi / 180.0)
         let text = yAxis.nameAxis
 
-        ChartUtils.drawText(
-            context: context,
-            text: text,
-            point: CGPoint(x: fixedPosition, y: positions.y + offset),
-            attributes: labelAttrs,
+        context.drawText(
+            text,
+            at: CGPoint(x: fixedPosition, y: positions.y + offset),
+            align: .center,
             anchor: CGPoint(x: 1.0, y: 0.5),
-            angleRadians: labelRotationAngleRadians)
+            angleRadians: labelRotationAngleRadians,
+            attributes: labelAttrs)
     }
     
     /// draws the y-labels on the specified x-position

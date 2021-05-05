@@ -117,14 +117,13 @@ open class XAxisRendererHorizontalBarChart: XAxisRenderer
                           NSAttributedString.Key.paragraphStyle: paraStyle]
 
         let labelRotationAngleRadians = -90.0 * CGFloat(.pi / 180.0)
-
-        ChartUtils.drawText(
-            context: context,
-            text: text,
-            point: CGPoint(x: xNamePos, y: midY),
-            attributes: labelAttrs,
+        context.drawText(
+            text,
+            at: CGPoint(x: xNamePos, y: midY),
+            align: .center,
             anchor: CGPoint(x: 1.0, y: 0.5),
-            angleRadians: labelRotationAngleRadians)
+            angleRadians: labelRotationAngleRadians,
+            attributes: labelAttrs)
     }
 
     /// draws the x-labels on the specified y-position
@@ -194,13 +193,13 @@ open class XAxisRendererHorizontalBarChart: XAxisRenderer
         let labelRotationAngleRadians = -90.0 * CGFloat(.pi / 180.0)
         let text = xAxis.nameAxis
 
-        ChartUtils.drawText(
-            context: context,
-            text: text,
-            point: CGPoint(x: fixedPosition, y: positions.y + offset),
-            attributes: labelAttrs,
+        context.drawText(
+            text,
+            at: CGPoint(x: fixedPosition, y: positions.y + offset),
+            align: .center,
             anchor: CGPoint(x: 1.0, y: 0.5),
-            angleRadians: labelRotationAngleRadians)
+            angleRadians: labelRotationAngleRadians,
+            attributes: labelAttrs)
     }
     
     @objc open func drawLabel(

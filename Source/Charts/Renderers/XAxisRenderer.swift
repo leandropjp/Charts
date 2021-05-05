@@ -197,9 +197,9 @@ open class XAxisRenderer: NSObject, AxisRenderer
 
         case .bothSided:
             drawLabels(context: context, pos: viewPortHandler.contentTop - yOffset, anchor: CGPoint(x: 0.5, y: 1.0))
-            drawNameXAxis ( context: context, nameRect: xAxis.nameRectTop)
+            drawNameXAxis ( context: context, nameRect: axis.nameRectTop)
             drawLabels(context: context, pos: viewPortHandler.contentBottom + yOffset, anchor: CGPoint(x: 0.5, y: 0.0))
-            drawNameXAxis ( context: context, nameRect: xAxis.nameRectBottom)
+            drawNameXAxis ( context: context, nameRect: axis.nameRectBottom)
         }
     }
 
@@ -374,15 +374,13 @@ open class XAxisRenderer: NSObject, AxisRenderer
 
         let text = xAxis.nameAxis
         let labelMaxSize = CGSize()
-
-        ChartUtils.drawMultilineText(
-            context: context,
-            text: text,
-            point: CGPoint(x: positions.x, y: fixedPosition),
-            attributes: labelAttrs,
-            constrainedToSize: labelMaxSize,
+        context.drawMultilineText(
+            text,
+            at: CGPoint(x: positions.x, y: fixedPosition),
+            constrainedTo: labelMaxSize,
             anchor: CGPoint(x: 0.5, y: 1.0),
-            angleRadians: labelRotationAngleRadians)
+            angleRadians: labelRotationAngleRadians,
+            attributes: labelAttrs)
     }
     
     @objc open func drawLabel(

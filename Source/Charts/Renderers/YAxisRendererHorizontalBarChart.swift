@@ -52,35 +52,11 @@ open class YAxisRendererHorizontalBarChart: YAxisRenderer
         
         let dependency = axis.axisDependency
         let labelPosition = axis.labelPosition
-        
-<<<<<<< HEAD
-        if dependency == .left
-        {
-            if labelPosition == .outsideChart
-            {
-                yPos = viewPortHandler.contentTop - baseYOffset
 
-                drawNameYAxis( context: context, nameRect: yAxis.nameRectTop)
-            }
-            else
-            {
-                yPos = viewPortHandler.contentTop - baseYOffset
-            }
-        }
-        else
-        {
-            if labelPosition == .outsideChart
-            {
-                yPos = viewPortHandler.contentBottom + lineHeight + baseYOffset
-                drawNameYAxis( context: context, nameRect: yAxis.nameRectBottom)
-            }
-            else
-=======
         // Comparing with Android code, the code here is slightly different about lineHeight
         let yPos: CGFloat =
         {
             switch (dependency, labelPosition)
->>>>>>> original-master
             {
             case (.left, .outsideChart):
                 return viewPortHandler.contentTop - baseYOffset - lineHeight
@@ -95,6 +71,29 @@ open class YAxisRendererHorizontalBarChart: YAxisRenderer
                 return viewPortHandler.contentBottom + baseYOffset
             }
         }()
+
+        //<<<<<<< HEAD
+        //        if dependency == .left
+        //        {
+        //            if labelPosition == .outsideChart
+        //            {
+        //                yPos = viewPortHandler.contentTop - baseYOffset
+        //
+        //                drawNameYAxis( context: context, nameRect: yAxis.nameRectTop)
+        //            }
+        //            else
+        //            {
+        //                yPos = viewPortHandler.contentTop - baseYOffset
+        //            }
+        //        }
+        //        else
+        //        {
+        //            if labelPosition == .outsideChart
+        //            {
+        //                yPos = viewPortHandler.contentBottom + lineHeight + baseYOffset
+        //                drawNameYAxis( context: context, nameRect: yAxis.nameRectBottom)
+        //            }
+        //            else
 
         drawYLabels(
             context: context,
@@ -312,44 +311,10 @@ open class YAxisRendererHorizontalBarChart: YAxisRenderer
                 let xOffset = l.lineWidth + l.xOffset
                 let yOffset = 2.0 + l.yOffset
 
-<<<<<<< HEAD
-                if l.labelPosition == .topRight
-                {
-                    ChartUtils.drawText(context: context,
-                        text: label,
-                        point: CGPoint(
-                            x: position.x + xOffset,
-                            y: viewPortHandler.contentTop + yOffset),
-                        align: .left,
-                        attributes: [NSAttributedString.Key.font: l.valueFont, NSAttributedString.Key.foregroundColor: l.valueTextColor])
-                }
-                else if l.labelPosition == .bottomRight
-                {
-                    ChartUtils.drawText(context: context,
-                        text: label,
-                        point: CGPoint(
-                            x: position.x + xOffset,
-                            y: viewPortHandler.contentBottom - labelLineHeight - yOffset),
-                        align: .left,
-                        attributes: [NSAttributedString.Key.font: l.valueFont, NSAttributedString.Key.foregroundColor: l.valueTextColor])
-                }
-                else if l.labelPosition == .topLeft
-                {
-                    ChartUtils.drawText(context: context,
-                        text: label,
-                        point: CGPoint(
-                            x: position.x - xOffset,
-                            y: viewPortHandler.contentTop + yOffset),
-                        align: .right,
-                        attributes: [NSAttributedString.Key.font: l.valueFont, NSAttributedString.Key.foregroundColor: l.valueTextColor])
-                }
-                else
-=======
                 let align: TextAlignment
                 let point: CGPoint
 
                 switch l.labelPosition
->>>>>>> original-master
                 {
                 case .rightTop:
                     align = .left

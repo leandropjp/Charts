@@ -9,7 +9,6 @@
 //  https://github.com/danielgindi/Charts
 //
 
-import Algorithms
 import Foundation
 
 /// Determines how to round DataSet index values for `ChartDataSet.entryIndex(x, rounding)` when an exact x-value is not found.
@@ -196,10 +195,58 @@ open class ChartDataSet: ChartBaseDataSet
     /// An empty array if no Entry object at that index.
     open override func entriesForXValue(_ xValue: Double) -> [ChartDataEntry]
     {
-        let match: (ChartDataEntry) -> Bool = { $0.x == xValue }
-        let i = partitioningIndex(where: match)
-        guard i < endIndex else { return [] }
-        return self[i...].prefix(while: match)
+        var entries = [ChartDataEntry]()
+
+        var low = startIndex
+        var high = endIndex - 1
+
+        while low <= high
+        {
+            var m = (high + low) / 2
+            var entry = self[m]
+
+            // if we have a match
+            if xValue == entry.x
+            {
+                while m > 0 && self[m - 1].x == xValue
+                {
+                    m -= 1
+                }
+
+                high = endIndex
+
+                // loop over all "equal" entries
+                while m < high
+                {
+                    entry = self[m]
+                    if entry.x == xValue
+                    {
+                        entries.append(entry)
+                    }
+                    else
+                    {
+                        break
+                    }
+
+                    m += 1
+                }
+
+                break
+            }
+            else
+            {
+                if xValue > entry.x
+                {
+                    low = m + 1
+                }
+                else
+                {
+                    high = m - 1
+                }
+            }
+        }
+
+        return entries
     }
     
     /// - Parameters:
@@ -213,57 +260,99 @@ open class ChartDataSet: ChartBaseDataSet
         closestToY yValue: Double,
         rounding: ChartDataSetRounding) -> Int
     {
-        var closest = partitioningIndex { $0.x >= xValue }
-        guard closest < endIndex else { return -1 }
+        var low = startIndex
+        var high = endIndex - 1
+        var closest = high
 
-        let closestXValue = self[closest].x
-
-        switch rounding {
-        case .up:
-            // If rounding up, and found x-value is lower than specified x, and we can go upper...
-            if closestXValue < xValue && closest < index(before: endIndex)
-            {
-                formIndex(after: &closest)
-            }
-
-        case .down:
-            // If rounding down, and found x-value is upper than specified x, and we can go lower...
-            if closestXValue > xValue && closest > startIndex
-            {
-                formIndex(before: &closest)
-            }
-
-        case .closest:
-            break
-        }
-
-        // Search by closest to y-value
-        if !yValue.isNaN
+        while low < high
         {
-            while closest > startIndex && self[index(before: closest)].x == closestXValue
+            let m = (low + high) / 2
+
+            let d1 = self[m].x - xValue
+            let d2 = self[m + 1].x - xValue
+            let ad1 = abs(d1), ad2 = abs(d2)
+
+            if ad2 < ad1
             {
-                formIndex(before: &closest)
+                // [m + 1] is closer to xValue
+                // Search in an higher place
+                low = m + 1
             }
-
-            var closestYValue = self[closest].y
-            var closestYIndex = closest
-
-            while closest < index(before: endIndex)
+            else if ad1 < ad2
             {
-                formIndex(after: &closest)
-                let value = self[closest]
+                // [m] is closer to xValue
+                // Search in a lower place
+                high = m
+            }
+            else
+            {
+                // We have multiple sequential x-value with same distance
 
-                if value.x != closestXValue { break }
-                if abs(value.y - yValue) <= abs(closestYValue - yValue)
+                if d1 >= 0.0
                 {
-                    closestYValue = yValue
-                    closestYIndex = closest
+                    // Search in a lower place
+                    high = m
+                }
+                else if d1 < 0.0
+                {
+                    // Search in an higher place
+                    low = m + 1
                 }
             }
 
-            closest = closestYIndex
+            closest = high
         }
-        
+
+        if closest != -1
+        {
+            let closestXValue = self[closest].x
+            if rounding == .up
+            {
+                // If rounding up, and found x-value is lower than specified x, and we can go upper...
+                if closestXValue < xValue && closest < endIndex - 1
+                {
+                    closest += 1
+                }
+            }
+            else if rounding == .down
+            {
+                // If rounding down, and found x-value is upper than specified x, and we can go lower...
+                if closestXValue > xValue && closest > 0
+                {
+                    closest -= 1
+                }
+            }
+
+            // Search by closest to y-value
+            if !yValue.isNaN
+            {
+                while closest > 0 && self[closest - 1].x == closestXValue
+                {
+                    closest -= 1
+                }
+
+                var closestYValue = self[closest].y
+                var closestYIndex = closest
+
+                while true
+                {
+                    closest += 1
+                    if closest >= endIndex { break }
+
+                    let value = self[closest]
+
+                    if value.x != closestXValue { break }
+                    if abs(value.y - yValue) <= abs(closestYValue - yValue)
+                    {
+                        closestYValue = yValue
+                        closestYIndex = closest
+                    }
+                }
+
+                closest = closestYIndex
+            }
+        }
+
         return closest
     }
     
